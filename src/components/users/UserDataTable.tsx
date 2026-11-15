@@ -11,6 +11,7 @@ import { AlertCircle, ChevronLeft, ChevronRight, Search, Users } from 'lucide-re
 import { useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
   TableBody,
@@ -70,9 +71,19 @@ export function UserDataTable({ data, isLoading, error, onSelectUser }: Props) {
       </div>
 
       {isLoading && (
-        <div className="space-y-2" role="status" aria-label="Cargando usuarios">
+        <div
+          className="rounded-lg border"
+          role="status"
+          aria-label="Cargando usuarios"
+        >
           {Array.from({ length: PAGE_SIZE }).map((_, i) => (
-            <div key={i} className="h-11 animate-pulse rounded-lg bg-muted" />
+            <div key={i} className="flex items-center gap-4 border-b px-3 py-3 last:border-0">
+              <Skeleton className="h-4 w-36" />
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-44" />
+              <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-6 w-6 rounded-md" />
+            </div>
           ))}
         </div>
       )}

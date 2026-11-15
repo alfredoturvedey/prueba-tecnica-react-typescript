@@ -1,4 +1,5 @@
 import { AlertCircle, FileText } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
 import type { Post } from '@/types/api'
 import { PostCard } from './PostCard'
 
@@ -13,7 +14,12 @@ export function PostList({ posts, isLoading, error }: Props) {
     return (
       <div className="space-y-3" role="status" aria-label="Cargando publicaciones">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-28 animate-pulse rounded-xl bg-muted" />
+          <div key={i} className="rounded-xl border p-4 space-y-3">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-5/6" />
+            <Skeleton className="h-3 w-2/3" />
+          </div>
         ))}
       </div>
     )
