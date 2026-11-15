@@ -1,6 +1,11 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import { ArrowUpDown, BookOpen } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import type { User } from '@/types/api'
 
 export function createUserColumns(
@@ -57,18 +62,19 @@ export function createUserColumns(
       enableSorting: false,
       enableGlobalFilter: false,
       cell: ({ row }) => (
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-1.5"
-          onClick={(e) => {
-            e.stopPropagation()
-            onSelectUser(row.original.id)
-          }}
-        >
-          <BookOpen className="size-3.5" />
-          Gestionar publicaciones
-        </Button>
+        <Tooltip>
+          <TooltipTrigger
+            className={buttonVariants({ variant: 'outline', size: 'icon-sm' })}
+            aria-label="Gestionar publicaciones"
+            onClick={(e) => {
+              e.stopPropagation()
+              onSelectUser(row.original.id)
+            }}
+          >
+            <BookOpen className="size-3.5" />
+          </TooltipTrigger>
+          <TooltipContent>Gestionar publicaciones</TooltipContent>
+        </Tooltip>
       ),
     },
   ]
