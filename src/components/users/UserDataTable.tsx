@@ -8,7 +8,7 @@ import {
   type SortingState,
 } from '@tanstack/react-table'
 import { AlertCircle, ChevronLeft, ChevronRight, Search, Users } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -20,7 +20,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import type { User } from '@/types/api'
-import { userColumns } from './columns'
+import { createUserColumns } from './columns'
 
 type Props = {
   data: User[]
@@ -35,9 +35,11 @@ export function UserDataTable({ data, isLoading, error, onSelectUser }: Props) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState('')
 
+  const columns = useMemo(() => createUserColumns(onSelectUser), [onSelectUser])
+
   const table = useReactTable({
     data,
-    columns: userColumns,
+    columns,
     state: { sorting, globalFilter },
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
@@ -133,7 +135,7 @@ export function UserDataTable({ data, isLoading, error, onSelectUser }: Props) {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={userColumns.length}
+                      colSpan={columns.length}
                       className="py-14 text-center"
                     >
                       <div className="flex flex-col items-center gap-2 text-muted-foreground">
