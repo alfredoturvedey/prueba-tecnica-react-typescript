@@ -1,7 +1,9 @@
 import { ArrowLeft, Building2, Mail } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { usePosts } from '@/hooks/usePosts'
+import type { Post } from '@/types/api'
 import type { User } from '@/types/api'
 import { CreatePostForm } from './CreatePostForm'
 import { PostList } from './PostList'
@@ -14,6 +16,12 @@ type Props = {
 export function UserPostsView({ user, onBack }: Props) {
   const { posts, isLoading, error, isCreating, createError, createPost, retry } =
     usePosts(user.id)
+
+  async function handleCreatePost(data: Pick<Post, 'title' | 'body'>) {
+    const ok = await createPost(data)
+    if (ok) toast.success('Publicación creada correctamente')
+    return ok
+  }
 
   return (
     <div className="space-y-6">
@@ -60,7 +68,7 @@ export function UserPostsView({ user, onBack }: Props) {
             </CardHeader>
             <CardContent>
               <CreatePostForm
-                onSubmit={createPost}
+                onSubmit={handleCreatePost}
                 isSubmitting={isCreating}
                 submitError={createError}
               />
