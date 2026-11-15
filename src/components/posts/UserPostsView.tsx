@@ -12,7 +12,7 @@ type Props = {
 }
 
 export function UserPostsView({ user, onBack }: Props) {
-  const { posts, isLoading, error, isCreating, createError, createPost } =
+  const { posts, isLoading, error, isCreating, createError, createPost, retry } =
     usePosts(user.id)
 
   return (
@@ -50,7 +50,7 @@ export function UserPostsView({ user, onBack }: Props) {
               <span className="ml-2 text-muted-foreground">({posts.length})</span>
             )}
           </h3>
-          <PostList posts={posts} isLoading={isLoading} error={error} />
+          <PostList posts={posts} isLoading={isLoading} error={error} onRetry={retry} />
         </section>
 
         <aside>

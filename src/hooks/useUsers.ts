@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { api } from '@/services/api'
 import type { User } from '@/types/api'
 
@@ -9,11 +9,14 @@ type UsersState = {
 }
 
 export function useUsers() {
+  const [attempt, setAttempt] = useState(0)
   const [state, setState] = useState<UsersState>({
     users: [],
     isLoading: true,
     error: null,
   })
+
+  const retry = useCallback(() => setAttempt((a) => a + 1), [])
 
   useEffect(() => {
     let cancelled = false
@@ -35,7 +38,7 @@ export function useUsers() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [attempt])
 
-  return state
+  return { ...state, retry }
 }

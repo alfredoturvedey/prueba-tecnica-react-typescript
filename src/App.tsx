@@ -4,7 +4,7 @@ import { useUsers } from '@/hooks/useUsers'
 import { useAppStore } from '@/store/useAppStore'
 
 export default function App() {
-  const { users, isLoading, error } = useUsers()
+  const { users, isLoading, error, retry } = useUsers()
   const { selectedUserId, selectUser, clearSelectedUser } = useAppStore()
 
   const selectedUser = users.find((u) => u.id === selectedUserId) ?? null
@@ -32,6 +32,7 @@ export default function App() {
                 isLoading={isLoading}
                 error={error}
                 onSelectUser={selectUser}
+                onRetry={retry}
               />
             </main>
           </>

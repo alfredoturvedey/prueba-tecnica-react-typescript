@@ -1,4 +1,5 @@
-import { AlertCircle, FileText } from 'lucide-react'
+import { AlertCircle, FileText, RefreshCw } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { Post } from '@/types/api'
 import { PostCard } from './PostCard'
@@ -7,9 +8,10 @@ type Props = {
   posts: Post[]
   isLoading: boolean
   error: string | null
+  onRetry: () => void
 }
 
-export function PostList({ posts, isLoading, error }: Props) {
+export function PostList({ posts, isLoading, error, onRetry }: Props) {
   if (isLoading) {
     return (
       <div className="space-y-3" role="status" aria-label="Cargando publicaciones">
@@ -29,10 +31,22 @@ export function PostList({ posts, isLoading, error }: Props) {
     return (
       <div
         role="alert"
-        className="flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive"
+        className="flex flex-col items-center gap-4 rounded-lg border border-destructive/40 bg-destructive/10 p-6 text-center text-destructive"
       >
-        <AlertCircle className="mt-0.5 size-4 shrink-0" />
-        <span>{error}</span>
+        <AlertCircle className="size-8 opacity-70" />
+        <div className="space-y-1">
+          <p className="text-sm font-medium">No se pudieron cargar las publicaciones</p>
+          <p className="text-xs opacity-80">{error}</p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onRetry}
+          className="gap-2 border-destructive/40 text-destructive hover:bg-destructive/10"
+        >
+          <RefreshCw className="size-3.5" />
+          Reintentar
+        </Button>
       </div>
     )
   }

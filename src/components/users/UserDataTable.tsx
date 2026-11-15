@@ -28,11 +28,12 @@ type Props = {
   isLoading: boolean
   error: string | null
   onSelectUser: (id: number) => void
+  onRetry: () => void
 }
 
 const PAGE_SIZE = 5
 
-export function UserDataTable({ data, isLoading, error, onSelectUser }: Props) {
+export function UserDataTable({ data, isLoading, error, onSelectUser, onRetry }: Props) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState('')
 
@@ -91,10 +92,20 @@ export function UserDataTable({ data, isLoading, error, onSelectUser }: Props) {
       {error && (
         <div
           role="alert"
-          className="flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive"
+          className="flex items-start justify-between gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive"
         >
-          <AlertCircle className="mt-0.5 size-4 shrink-0" />
-          <span>{error}</span>
+          <div className="flex items-start gap-3">
+            <AlertCircle className="mt-0.5 size-4 shrink-0" />
+            <span>{error}</span>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onRetry}
+            className="shrink-0 border-destructive/40 text-destructive hover:bg-destructive/10"
+          >
+            Reintentar
+          </Button>
         </div>
       )}
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { api } from '@/services/api'
 import type { Post } from '@/types/api'
 
@@ -11,6 +11,7 @@ type PostsState = {
 type CreatePostData = Pick<Post, 'title' | 'body'>
 
 export function usePosts(userId: number) {
+  const [attempt, setAttempt] = useState(0)
   const [state, setState] = useState<PostsState>({
     posts: [],
     isLoading: true,
@@ -18,6 +19,8 @@ export function usePosts(userId: number) {
   })
   const [isCreating, setIsCreating] = useState(false)
   const [createError, setCreateError] = useState<string | null>(null)
+
+  const retry = useCallback(() => setAttempt((a) => a + 1), [])
 
   useEffect(() => {
     let cancelled = false
@@ -39,7 +42,7 @@ export function usePosts(userId: number) {
     return () => {
       cancelled = true
     }
-  }, [userId])
+  }, [userId, attempt])
 
   async function createPost(data: CreatePostData): Promise<boolean> {
     setIsCreating(true)
@@ -60,5 +63,5 @@ export function usePosts(userId: number) {
     }
   }
 
-  return { ...state, isCreating, createError, createPost }
+  return { ...state, isCreating, createError, createPost, retry }
 }
