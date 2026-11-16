@@ -44,24 +44,27 @@ export function usePosts(userId: number) {
     }
   }, [userId, attempt])
 
-  async function createPost(data: CreatePostData): Promise<boolean> {
-    setIsCreating(true)
-    setCreateError(null)
-    try {
-      await api.posts.create({ ...data, userId })
-      // JSONPlaceholder always returns id 101 — use Date.now() to avoid key conflicts
-      const optimisticPost: Post = { id: Date.now(), userId, ...data }
-      setState((prev) => ({ ...prev, posts: [optimisticPost, ...prev.posts] }))
-      return true
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : 'Error al crear la publicación'
-      setCreateError(message)
-      return false
-    } finally {
-      setIsCreating(false)
-    }
-  }
+  const createPost = useCallback(
+    async (data: CreatePostData): Promise<boolean> => {
+      setIsCreating(true)
+      setCreateError(null)
+      try {
+        await api.posts.create({ ...data, userId })
+        // JSONPlaceholder always returns id 101 — use Date.now() to avoid key conflicts
+        const optimisticPost: Post = { id: Date.now(), userId, ...data }
+        setState((prev) => ({ ...prev, posts: [optimisticPost, ...prev.posts] }))
+        return true
+      } catch (err: unknown) {
+        const message =
+          err instanceof Error ? err.message : 'Error al crear la publicación'
+        setCreateError(message)
+        return false
+      } finally {
+        setIsCreating(false)
+      }
+    },
+    [userId],
+  )
 
   return { ...state, isCreating, createError, createPost, retry }
 }

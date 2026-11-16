@@ -17,10 +17,12 @@ import { Textarea } from '@/components/ui/textarea'
 const postSchema = z.object({
   title: z
     .string()
+    .trim()
     .min(1, 'El título es obligatorio')
     .max(100, 'Máximo 100 caracteres'),
   body: z
     .string()
+    .trim()
     .min(1, 'El contenido es obligatorio')
     .max(500, 'Máximo 500 caracteres'),
 })
@@ -44,6 +46,7 @@ export function CreatePostForm({ onSubmit, isSubmitting, submitError }: Props) {
     if (ok) form.reset()
   }
 
+  const titleLength = form.watch('title').length
   const bodyLength = form.watch('body').length
 
   return (
@@ -58,7 +61,12 @@ export function CreatePostForm({ onSubmit, isSubmitting, submitError }: Props) {
               <FormControl>
                 <Input placeholder="Escribe el título..." {...field} />
               </FormControl>
-              <FormMessage />
+              <div className="flex items-center justify-between">
+                <FormMessage />
+                <span className="ml-auto text-xs text-muted-foreground">
+                  {titleLength}/100
+                </span>
+              </div>
             </FormItem>
           )}
         />

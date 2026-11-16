@@ -1,4 +1,5 @@
 import { ArrowLeft, Building2, Mail } from 'lucide-react'
+import { useCallback } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -17,11 +18,18 @@ export function UserPostsView({ user, onBack }: Props) {
   const { posts, isLoading, error, isCreating, createError, createPost, retry } =
     usePosts(user.id)
 
-  async function handleCreatePost(data: Pick<Post, 'title' | 'body'>) {
-    const ok = await createPost(data)
-    if (ok) toast.success('Publicación creada correctamente')
-    return ok
-  }
+  const handleCreatePost = useCallback(
+    async (data: Pick<Post, 'title' | 'body'>) => {
+      const ok = await createPost(data)
+      if (ok) {
+        toast.success('Publicación creada correctamente')
+      } else {
+        toast.error('No se pudo crear la publicación')
+      }
+      return ok
+    },
+    [createPost],
+  )
 
   return (
     <div className="space-y-6">

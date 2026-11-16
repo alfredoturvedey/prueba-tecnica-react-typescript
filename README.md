@@ -25,10 +25,29 @@ npm run test
 npm run build
 ```
 
-La variable de entorno ya está incluida en el repositorio:
+La variable de entorno ya está incluida en el repositorio (`.env` commiteado intencionalmente: la URL es una API pública sin credenciales). También se incluye `.env.example` como referencia para clonar el proyecto:
 
 ```
 VITE_API_BASE_URL=https://jsonplaceholder.typicode.com
+```
+
+Si la variable está ausente, `api.ts` usa el mismo valor como fallback, por lo que el proyecto funciona incluso sin el `.env`.
+
+---
+
+## Estructura del proyecto
+
+```
+src/
+├── components/
+│   ├── posts/       — PostCard, PostList, CreatePostForm, UserPostsView
+│   ├── ui/          — Primitivos shadcn/ui (Button, Card, Input, Table, Tooltip…)
+│   └── users/       — UserDataTable, columns
+├── hooks/           — useUsers, usePosts  (fetch + estado local + retry)
+├── services/        — api.ts  (capa de red; único punto de contacto con fetch)
+├── store/           — useAppStore  (Zustand: solo selectedUserId)
+├── test/            — setup.ts, fixtures.ts
+└── types/           — api.ts  (User, Post y tipos relacionados)
 ```
 
 ---
@@ -81,7 +100,7 @@ Cada `useEffect` en `useUsers` y `usePosts` tiene un flag `cancelled`. Si el com
 - **TanStack Query** en lugar de hooks manuales: caching automático, deduplicación de peticiones, `staleTime`, `invalidateQueries` al crear posts y mejor manejo de background refetches.
 - **Code splitting** con `React.lazy` + `Suspense` para las rutas, reduciendo el bundle inicial (actualmente ~540 kB minificado).
 - **MSW (Mock Service Worker)** para los tests: mockear la red a nivel HTTP en vez de mockear el módulo `api.ts`, lo que da tests más cercanos a la realidad.
-- **Tests de integración end-to-end** con Playwright cubriendo el flujo completo: seleccionar usuario → ver posts → crear post → ver badge "Nuevo".
+- **Tests E2E con Playwright** cubriendo flujos desde el navegador real (el test de integración de `App.test.tsx` cubre el flujo a nivel de componente, pero Playwright validaría la red y el CSS rendering reales).
 - **Virtualización de listas** con `@tanstack/react-virtual` para soportar miles de filas sin degradación de rendimiento.
 - **Rutas** con React Router: cada usuario tendría su propia URL (`/users/1/posts`), permitiendo compartir enlaces y usar el botón atrás del navegador de forma nativa.
 - **Paginación server-side** de posts: JSONPlaceholder soporta `_page` y `_limit`; implementarlo evitaría cargar los 100 posts de golpe.
@@ -116,3 +135,6 @@ Usé Claude como par de programación a lo largo de toda la implementación. Aqu
 - **TanStack Table v9**: npm instaló la v9 por defecto, cuya API cambió por completo (renombró `getCoreRowModel` a `createCoreRowModel`, etc.). Se hizo downgrade a v8 que es la que shadcn documenta y soporta.
 - **Caché de Vite**: tras el downgrade de TanStack Table el navegador mostraba `SyntaxError: does not provide an export named 'getCoreRowModel'`. La causa era el caché de pre-bundling de Vite en `node_modules/.vite`. Se resolvió borrando ese directorio.
 - **Cleanup de RTL en tests**: los primeros tests de `CreatePostForm` fallaban con "Found multiple elements" porque RTL no podía enganchar su `afterEach(cleanup)` automático sin `globals: true` en Vitest. Se añadió `afterEach(() => cleanup())` explícito en `src/test/setup.ts`.
+- **`role="button"` en `<tr>`**: la primera implementación añadía `role="button"` a la fila de la tabla para hacerla clickeable. Ese antipatrón rompe la semántica ARIA (los `<td>` quedan huérfanos). Se eliminó el role; la fila sigue siendo navegable vía teclado con `tabIndex` y `onKeyDown`, y la acción principal la dispara el botón dedicado "Gestionar publicaciones".
+- **Zod sin `.trim()`**: el schema original aceptaba strings de solo espacios (`" "`) como título o cuerpo válido. Se añadió `.trim()` antes de `.min(1, ...)` en ambos campos.
+- **`createPost` sin `useCallback`**: la función `createPost` de `usePosts` y `handleCreatePost` de `UserPostsView` se envuelven ahora en `useCallback` con sus dependencias correctas, evitando recrearlas en cada render.

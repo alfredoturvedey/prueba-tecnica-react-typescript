@@ -138,8 +138,6 @@ export function UserDataTable({ data, isLoading, error, onSelectUser, onRetry }:
                       onClick={() => onSelectUser(row.original.id)}
                       className="cursor-pointer"
                       tabIndex={0}
-                      role="button"
-                      aria-label={`Ver publicaciones de ${row.original.name}`}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                           e.preventDefault()
